@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXPO GPM | El Evento de Comunicación Gráfica de Venezuela</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- tsParticles (para el fondo animado) - Movido al head con defer -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.34.1/dist/tsparticles.min.js" defer></script>
+
+    <style>
+        /* Estilos personalizados y de la fuente */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e5e7eb;
+            scroll-behavior: smooth;
+        }
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Gradiente animado para el fondo del Hero */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Animación de entrada estilo Apple */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px) scale(0.98);
+            transition: opacity 1.2s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        /* Animación de flotar para el logo principal */
+        .logo-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        /* Estilos para el menú de navegación flotante */
+        #main-nav {
+            transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-scrolled {
+            top: 1.5rem !important;
+            animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Estilos para las tarjetas de expositores */
+        .exhibitor-card {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease;
+        }
+        .exhibitor-card:hover {
+            transform: scale(1.05);
+        }
+        .exhibitor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
+            transition: background 0.4s ease;
+        }
+        .exhibitor-card:hover::before {
+             background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+        }
+        /* Estilos interactivos para la lista de rubros */
+        .rubro-item {
+            transition: transform 0.3s ease, color 0.3s ease;
+            cursor: default;
+        }
+        .rubro-item:hover {
+            transform: translateX(10px);
+            color: #e73c7e; /* Color de acento rosa */
+        }
+        /* Animación para la imagen de perfil */
+        .profile-image-container {
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        .profile-image-container img {
+            transition: transform 0.5s ease;
+        }
+        .profile-image-container:hover img {
+            transform: scale(1.05);
+        }
+        /* Estilos para el carrusel de logos */
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .logo-slider {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
+            mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0));
+        }
+        .logo-slider:hover .logo-track {
+            animation-play-state: paused;
+        }
+        .logo-track {
+            display: flex;
+            width: calc(200px * 14); /* 200px por logo, 7 logos * 2 = 14 */
+            animation: scroll 40s linear infinite;
+        }
+        .logo-item {
+            width: 200px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: grayscale(100%);
+        }
+        .logo-circle:hover {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+        .logo-circle img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        /* Estilos para la galería de fotos */
+        @keyframes scroll-gallery {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+        .gallery-slider {
+            overflow: hidden;
+            padding: 2rem 0;
+            position: relative;
+        }
+        .gallery-slider:hover .gallery-track {
+            animation-play-state: paused;
+        }
+        .gallery-track {
+            display: flex;
+            animation: scroll-gallery 120s linear infinite;
+        }
+        .gallery-track-reverse {
+            animation-direction: reverse;
+        }
+        .gallery-item {
+            flex-shrink: 0;
+            width: 400px;
+            height: 250px;
+            margin: 0 1rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(231, 60, 126, 0.3);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* Estilos para el Modal (Lightbox) */
+        #image-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        #image-modal.open #modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        /* Animación para botones */
+        .cta-button {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 20px rgba(231, 60, 126, 0.4);
+        }
+        /* Botón flotante de WhatsApp */
+        .whatsapp-fab {
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: whatsapp-pulse 2s infinite;
+        }
+        @keyframes whatsapp-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        .whatsapp-fab:hover {
+            transform: scale(1.1);
+            animation: none; /* Pausar pulso al pasar el cursor */
+        }
+        /* Botón para ir arriba */
+        #scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        #scroll-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #scroll-to-top:hover {
+            transform: scale(1.1);
+        }
+        #progress-circle {
+            transform: rotate(-90deg);
+        }
+        /* Estilo para el Footer */
+        .footer-bg {
+            background-color: #0a0a0a;
+            background-image: radial-gradient(circle at 50% 0, rgba(139, 92, 246, 0.1), transparent 40%);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    
+    <nav id="main-nav" class="fixed -top-24 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-40">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6">
+                <div class="flex-shrink-0">
+                    <a href="#home">
+                        <img class="h-12 w-auto" src="https://i.postimg.cc/fb8KSsRn/Logo-EXPO-GPM-outline.png" alt="Logo EXPO GPM">
+                    </a>
+                </div>
+                <div class="hidden md:flex md:items-center md:space-x-8">
+                    <a href="#exhibitors" class="text-white hover:text-pink-300 transition-colors duration-300 font-semibold">Expositores</a>
+                    <a href="#sponsors" class="text-white hover:text-pink-300 transition-colors duration-300 font-semibold">Marcas</a>
+                    <a href="#gallery" class="text-white hover:text-pink-300 transition-colors duration-300 font-semibold">Galería</a>
+                    <a href="#register" class="text-white hover:text-pink-300 transition-colors duration-300 font-semibold">Contacto</a>
+                </div>
+                <div class="hidden md:block">
+                    <a href="https://wa.me/584129595798" target="_blank" rel="noopener noreferrer" class="cta-button inline-block bg-gradient-to-r from-pink-500 to-violet-500 text-white font-bold py-2 px-6 rounded-full text-sm uppercase tracking-wider">
+                        ¡Quiero mi Stand!
+                    </a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/20 focus:outline-none">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50">
+        <div class="flex justify-end p-4">
+             <button id="close-mobile-menu" class="p-2 rounded-md text-white">
+                <i data-lucide="x" class="h-8 w-8"></i>
+            </button>
+        </div>
+        <div class="flex flex-col items-center justify-center h-full space-y-8">
+            <a href="#exhibitors" class="mobile-link text-white text-2xl font-bold">Expositores</a>
+            <a href="#sponsors" class="mobile-link text-white text-2xl font-bold">Marcas</a>
+            <a href="#gallery" class="mobile-link text-white text-2xl font-bold">Galería</a>
+            <a href="#register" class="mobile-link text-white text-2xl font-bold">Contacto</a>
+            <a href="https://wa.me/584129595798" target="_blank" rel="noopener noreferrer" class="cta-button mt-8 inline-block bg-gradient-to-r from-pink-500 to-violet-500 text-white font-bold py-3 px-8 rounded-full text-lg uppercase tracking-wider">
+                ¡Quiero mi Stand!
+            </a>
+        </div>
+    </div>
+
+
+    <div class="relative">
+
+        <div id="particles-js" class="absolute top-0 left-0 w-full h-full z-0"></div>
+
+        <header id="home" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden animated-gradient">
+            <div class="relative z-10 p-8 flex flex-col items-center">
+                <img src="https://i.postimg.cc/fb8KSsRn/Logo-EXPO-GPM-outline.png" alt="Logo EXPO GPM" class="w-48 md:w-64 mb-8 reveal logo-float" onerror="this.style.display='none'">
+                <h1 class="font-poppins text-4xl md:text-6xl font-bold text-white uppercase tracking-wider reveal" style="transition-delay: 100ms;">
+                    Atención Caracas
+                </h1>
+                <p class="mt-4 text-xl md:text-2xl text-white font-light max-w-2xl mx-auto reveal" style="transition-delay: 200ms;">
+                    ¿Pensaste que ya lo habías visto todo?
+                </p>
+                <p class="mt-2 text-xl md:text-2xl text-white font-light max-w-2xl mx-auto reveal" style="transition-delay: 300ms;">
+                    Prepárate...
+                </p>
+                <p class="mt-10 font-poppins text-3xl md:text-4xl font-black text-white uppercase tracking-tighter reveal" style="transition-delay: 400ms;">
+                    Próximamente
+                </p>
+                <p class="mt-2 text-2xl md:text-3xl text-white bg-black bg-opacity-25 px-4 py-2 rounded-lg inline-block reveal" style="transition-delay: 500ms;">
+                    Octubre-Noviembre 2025
+                </p>
+                <p class="mt-10 text-lg md:text-xl text-white font-semibold reveal" style="transition-delay: 600ms;">
+                    Atentos a nuestras redes
+                </p>
+            </div>
+        </header>
+
+        <main class="relative z-10 bg-[#0a0a0a]">
+            <section class="py-16 px-4 sm:px-6 lg:px-8 text-center bg-[#0a0a0a]">
+                <h2 class="font-poppins text-2xl md:text-4xl font-bold max-w-4xl mx-auto reveal text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-orange-500">
+                    Vive la experiencia de la Comunicación Gráfica, el Marketing y la Publicidad en Venezuela
+                </h2>
+            </section>
+
+            <section id="exhibitors" class="py-20 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center reveal">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">¿Quiénes serán los <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">expositores?</span></h2>
+                    </div>
+                    <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="exhibitor-card h-96 rounded-2xl flex items-end p-6 reveal" style="background-image: url('https://i.postimg.cc/Bny02jQ4/1730837811530.jpg');">
+                            <h3 class="relative z-10 font-poppins text-2xl font-bold text-white">Fabricantes y Distribuidores</h3>
+                        </div>
+                        <div class="exhibitor-card h-96 rounded-2xl flex items-end p-6 reveal" style="background-image: url('https://i.postimg.cc/XvC0LnpF/banner-carrusel-proveedores-gigantografia.jpg'); transition-delay: 200ms;">
+                            <h3 class="relative z-10 font-poppins text-2xl font-bold text-white">Proveedores de Servicios Gráficos</h3>
+                        </div>
+                        <div class="exhibitor-card h-96 rounded-2xl flex items-end p-6 reveal" style="background-image: url('https://i.postimg.cc/xT6YTswk/Publicidad-3.jpg'); transition-delay: 400ms;">
+                            <h3 class="relative z-10 font-poppins text-2xl font-bold text-white">Proveedores de Marketing y Medios</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="profile" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+                <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="reveal">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">El Perfil de Nuestros <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Expositores</span></h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Convocamos a las empresas líderes, desde fabricantes y distribuidores de maquinaria, equipos e insumos para la industria gráfica, hasta las agencias, influencers y medios digitales que están definiendo el futuro de la publicidad y el marketing en Venezuela.
+                        </p>
+                        <h3 class="font-poppins text-3xl font-bold mt-10">Clasificación por <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">Rubros</span></h3>
+                        <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 text-gray-300">
+                            <p class="rubro-item">Agencias de publicidad</p><p class="rubro-item">Artículos P.O.P</p><p class="rubro-item">Bordados y estampados</p><p class="rubro-item">Capacitación</p><p class="rubro-item">Confección textil</p><p class="rubro-item">Consumibles</p><p class="rubro-item">Diseño gráfico</p><p class="rubro-item">Display y Stands</p><p class="rubro-item">Editoriales</p><p class="rubro-item">Encuadernación</p><p class="rubro-item">Empaques y envases</p><p class="rubro-item">Etiquetas</p><p class="rubro-item">Flexografía</p><p class="rubro-item">Fotografía</p><p class="rubro-item">Gran Formato</p><p class="rubro-item">Impresión digital</p><p class="rubro-item">Influencers</p><p class="rubro-item">Letreros corpóreos</p><p class="rubro-item">Servicio técnico</p><p class="rubro-item">Maquinarias</p><p class="rubro-item">Marketing Digital</p><p class="rubro-item">Offset / Litografías</p><p class="rubro-item">Reconocimientos</p><p class="rubro-item">Pre-prensa</p><p class="rubro-item">Rotulación</p><p class="rubro-item">Señalización</p><p class="rubro-item">Serigrafía</p><p class="rubro-item">Software</p><p class="rubro-item">Sublimación</p><p class="rubro-item">Sustratos y papel</p><p class="rubro-item">Tarjetería</p><p class="rubro-item">Troqueles y laminados</p><p class="rubro-item">Publicidad exterior</p><p class="rubro-item">Videos publicitarios</p><p class="rubro-item">Vinilos, PVC y acrílicos</p>
+                        </div>
+                    </div>
+                    <div class="reveal profile-image-container" style="transition-delay: 200ms;">
+                        <img src="https://i.postimg.cc/sDYz7HdD/ojo-color-829x476-min-2.webp" alt="Imagen abstracta de un ojo con colores vibrantes" class="rounded-2xl shadow-2xl w-full h-auto">
+                    </div>
+                </div>
+            </section>
+            
+            <section id="brand-boost" class="py-20 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="reveal profile-image-container lg:order-2">
+                        <img src="https://i.postimg.cc/dVf51vH7/impulso-marca.jpg" alt="Persona trabajando en un proyecto creativo para impulsar una marca" class="rounded-2xl shadow-2xl w-full h-auto">
+                    </div>
+                    <div class="reveal lg:order-1" style="transition-delay: 200ms;">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">¡Impulsando tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-500">Marca!</span></h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            En Expo GPM, los visitantes encuentran todo lo necesario para crear, lanzar y potenciar su marca de manera efectiva. Creamos un ecosistema único donde convergen los proveedores de equipos de impresión de última generación con los prestadores de servicios de publicidad y marketing más innovadores de Venezuela.
+                        </p>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Nuestro objetivo es claro: darte las herramientas y conexiones para que tu marca no solo compita, sino que destaque y lidere el mercado.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="visitor-profile" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+                <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="reveal">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">¿Para Quién es este <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Evento?</span></h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Es un evento abierto a todos los apasionados por la creatividad y los negocios, ideal para quienes buscan proveedores, inspiración y las últimas tendencias para hacer crecer sus proyectos.
+                        </p>
+                        <h3 class="font-poppins text-3xl font-bold mt-10">El punto de encuentro ideal para:</h3>
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="briefcase" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Directivos y Gerentes:</span> CEOs, directores y ejecutivos que buscan potenciar sus estrategias de marketing y ventas.</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="rocket" class="w-6 h-6 text-pink-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Emprendedores y Profesionales:</span> Independientes que desean contactar con los mejores proveedores de insumos y equipos.</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="mouse-pointer-square" class="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Creativos y Agencias:</span> Publicistas, diseñadores y personal de agencias en busca de inspiración y nuevas tecnologías.</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="graduation-cap" class="w-6 h-6 text-violet-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Estudiantes:</span> Futuros profesionales del diseño gráfico y la comunicación que quieren conectar con la industria.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="reveal profile-image-container" style="transition-delay: 200ms;">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" alt="Grupo diverso de profesionales y estudiantes en un evento de networking" class="rounded-2xl shadow-2xl w-full h-auto">
+                    </div>
+                </div>
+            </section>
+
+            <section id="stats" class="py-20 bg-[#0a0a0a]">
+                <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                    <div class="reveal">
+                        <h3 class="font-poppins text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                            <span class="stat-number" data-target="72">0</span>%
+                        </h3>
+                        <p class="mt-2 text-lg text-gray-400 max-w-xs mx-auto">intención de compra en sitio</p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 200ms;">
+                        <h3 class="font-poppins text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+                            +<span class="stat-number" data-target="9200">0</span>
+                        </h3>
+                        <p class="mt-2 text-lg text-gray-400 max-w-xs mx-auto">visitantes en la última edición (Caracas)</p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 400ms;">
+                        <h3 class="font-poppins text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-green-500">
+                            <span class="stat-number" data-target="3">0</span>
+                        </h3>
+                        <p class="mt-2 text-lg text-gray-400 max-w-xs mx-auto">días de exhibición</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sponsors" class="py-20 bg-gray-900/50">
+                <div class="max-w-6xl mx-auto px-4">
+                    <div class="text-center mb-12 reveal">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">Marcas que <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-500">Confían en Nosotros</span></h2>
+                    </div>
+                    <div class="logo-slider">
+                        <div class="logo-track">
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/C5TcHV9v/275325286-479603313882301-4683980667627532538-n-removebg-preview.png" alt="Logo Marca 1"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/qMrmN4sq/277586395-376989927767677-7653177603065573209-n-removebg-preview.png" alt="Logo Marca 2"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/PJW2SRjd/300708459-405588251660345-7856844377197781129-n-removebg-preview.png" alt="Logo Marca 3"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/RCKsCNn2/images-removebg-preview.png" alt="Logo Marca 4"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/Kv50LwfN/Logo-Diart-Digital-Arte-CA-removebg-preview.png" alt="Logo Diart"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/g2kNKsBP/Logo-Instagram-Daiko-Supplies-removebg-preview.png" alt="Logo Daiko Supplies"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/K8qQpTd3/Mercapack-logo-removebg-preview.png" alt="Logo Mercapack"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/C5TcHV9v/275325286-479603313882301-4683980667627532538-n-removebg-preview.png" alt="Logo Marca 1"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/qMrmN4sq/277586395-376989927767677-7653177603065573209-n-removebg-preview.png" alt="Logo Marca 2"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/PJW2SRjd/300708459-405588251660345-7856844377197781129-n-removebg-preview.png" alt="Logo Marca 3"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/RCKsCNn2/images-removebg-preview.png" alt="Logo Marca 4"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/Kv50LwfN/Logo-Diart-Digital-Arte-CA-removebg-preview.png" alt="Logo Diart"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/g2kNKsBP/Logo-Instagram-Daiko-Supplies-removebg-preview.png" alt="Logo Daiko Supplies"></div></div>
+                            <div class="logo-item"><div class="logo-circle"><img src="https://i.postimg.cc/K8qQpTd3/Mercapack-logo-removebg-preview.png" alt="Logo Mercapack"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gallery" class="py-20">
+                <div class="text-center mb-12 reveal">
+                    <h2 class="font-poppins text-4xl md:text-5xl font-bold">Momentos de Nuestra <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Última Edición</span></h2>
+                </div>
+                
+                <div class="gallery-slider">
+                    <div class="gallery-track">
+                    </div>
+                </div>
+
+                <div class="gallery-slider mt-8">
+                    <div class="gallery-track gallery-track-reverse">
+                    </div>
+                </div>
+            </section>
+            
+            <section id="register" class="py-20 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="reveal profile-image-container lg:order-2">
+                        <img src="https://i.postimg.cc/c1383WDq/tecnologia-y-diseno-2024.jpg" alt="Tecnología y diseño en un evento" class="rounded-2xl shadow-2xl w-full h-auto">
+                    </div>
+                    <div class="reveal lg:order-1">
+                        <h2 class="font-poppins text-4xl md:text-5xl font-bold">Un Espectáculo de <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">Innovación y Creatividad</span></h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Prepárate para un evento que congregará a todo el sector de la Comunicación Gráfica y la Publicidad de Venezuela, con invitados internacionales de lujo. Será el punto de encuentro para el networking entre empresas líderes, talentosos artistas visuales, influencers y los medios de comunicación más importantes del país.
+                        </p>
+                        <div class="mt-8 space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="printer" class="w-6 h-6 text-pink-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Demostraciones en Vivo:</span> Plotters de impresión, corte de gran formato y equipos de última generación.</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="trending-up" class="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Últimas Tendencias:</span> Descubre lo nuevo en material publicitario y sistemas de alta tecnología.</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="mic" class="w-6 h-6 text-violet-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Charlas Magistrales:</span> Aprende de los grandes maestros de la industria gráfica y publicitaria.</p>
+                            </div>
+                             <div class="flex items-start space-x-3">
+                                <i data-lucide="gift" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1"></i>
+                                <p><span class="font-bold text-white">Sorpresas y Descuentos:</span> Disfruta de ofertas exclusivas para visitantes y muchas sorpresas más.</p>
+                            </div>
+                        </div>
+                        <p class="mt-8 font-poppins text-2xl font-bold text-white">Este evento ya tiene lugar y fecha.</p>
+                        <a href="https://wa.me/584129595798" target="_blank" rel="noopener noreferrer" class="cta-button mt-4 inline-block bg-gradient-to-r from-pink-500 to-violet-500 text-white font-bold py-4 px-12 rounded-full text-xl uppercase tracking-wider">
+                            ¡Quiero ser Expositor!
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="footer-bg pt-16 pb-8 px-4 overflow-hidden">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div class="reveal flex flex-col items-center md:items-start">
+                    <img src="https://i.postimg.cc/fb8KSsRn/Logo-EXPO-GPM-outline.png" alt="Logo EXPO GPM" class="w-32 mb-4">
+                    <p class="text-gray-400 max-w-xs">El punto de encuentro para la industria de la comunicación gráfica, el marketing y la publicidad en Venezuela.</p>
+                     <a href="https://www.expo-gpm.com/" target="_blank" rel="noopener noreferrer" class="mt-4 text-cyan-400 hover:text-cyan-300 transition-colors">
+                        www.expo-gpm.com
+                    </a>
+                </div>
+                <div class="reveal" style="transition-delay: 200ms;">
+                    <h3 class="font-poppins font-bold text-white text-lg mb-4">Asesores de Venta</h3>
+                    <ul class="text-gray-400 space-y-2">
+                        <li><a href="tel:+584129595798" class="hover:text-white transition-colors duration-300">+58 412-9595798</a></li>
+                        <li><a href="tel:+584241817607" class="hover:text-white transition-colors duration-300">+58 424-1817607</a></li>
+                        <li><a href="tel:+584242059990" class="hover:text-white transition-colors duration-300">+58 424-2059990</a></li>
+                        <li><a href="mailto:info@expo-gpm.com" class="hover:text-white transition-colors duration-300">info@expo-gpm.com</a></li>
+                    </ul>
+                </div>
+                <div class="reveal" style="transition-delay: 400ms;">
+                    <h3 class="font-poppins font-bold text-white text-lg mb-4">Síguenos</h3>
+                    <div class="flex justify-center md:justify-start space-x-6">
+                        <a href="https://www.instagram.com/expograficapm" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-pink-400 transition-all duration-300 transform hover:scale-125"><i data-lucide="instagram" class="w-7 h-7"></i></a>
+                        <a href="https://www.tiktok.com/@expograficapm_ve" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-cyan-400 transition-all duration-300 transform hover:scale-125">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal border-t border-gray-800 mt-8 pt-6 text-center text-gray-500 text-sm" style="transition-delay: 600ms;">
+                <p>© 2025 EXPO-GPM. Todos los derechos reservados.</p>
+                <p class="mt-1">Página web diseñada por <a href="https://www.instagram.com/lemustech.ve" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">@Lemustech.ve</a></p>
+            </div>
+        </footer>
+
+        <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 opacity-0 pointer-events-none">
+            <div id="modal-content" class="relative max-w-4xl max-h-4/5 transform scale-95">
+                <img id="modal-image" src="" alt="Vista ampliada de la foto del evento" class="max-w-full max-h-[80vh] rounded-lg">
+                <button id="close-modal" class="absolute -top-4 -right-4 text-white bg-pink-500 rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">&times;</button>
+            </div>
+        </div>
+        
+        <a href="https://wa.me/584129595798" target="_blank" rel="noopener noreferrer" class="whatsapp-fab fixed bottom-8 right-8 z-30">
+            <i data-lucide="message-circle" class="w-8 h-8"></i>
+        </a>
+
+        <button id="scroll-to-top" class="opacity-0">
+            <svg class="w-full h-full" viewBox="0 0 36 36">
+                <path id="progress-circle-bg" class="stroke-current text-white/20" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="2"></path>
+                <path id="progress-circle" class="stroke-current text-pink-500" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="arrow-up" class="w-6 h-6 text-white"></i>
+            </div>
+        </button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lucide.createIcons();
+            
+            const mainNav = document.getElementById('main-nav');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    mainNav.classList.add('nav-scrolled');
+                } else {
+                    mainNav.classList.remove('nav-scrolled');
+                }
+            });
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+            });
+
+            closeMobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            revealElements.forEach(el => observer.observe(el));
+
+            const statsSection = document.getElementById('stats');
+            let hasAnimated = false;
+
+            const animateStatNumbers = () => {
+                const statNumbers = document.querySelectorAll('.stat-number');
+                statNumbers.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    const duration = 2000;
+                    
+                    const updateCount = (startTime) => {
+                        const now = performance.now();
+                        const progress = Math.min((now - startTime) / duration, 1);
+                        const currentVal = Math.floor(progress * target);
+
+                        counter.innerText = currentVal.toLocaleString('de-DE');
+
+                        if (progress < 1) {
+                            requestAnimationFrame(() => updateCount(startTime));
+                        } else {
+                            counter.innerText = target.toLocaleString('de-DE');
+                        }
+                    };
+                    requestAnimationFrame(() => updateCount(performance.now()));
+                });
+            };
+
+            const statsObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !hasAnimated) {
+                    animateStatNumbers();
+                    hasAnimated = true;
+                }
+            }, { threshold: 0.5 });
+            
+            if (statsSection) {
+                statsObserver.observe(statsSection);
+            }
+
+            const galleryImages = [
+                'https://i.postimg.cc/8CkhdY7R/foto-expo-gpm-caracas-2024-11.jpg', 'https://i.postimg.cc/JhTjpQX9/foto-expo-gpm-caracas-2024-13.jpg', 'https://i.postimg.cc/909TF5kh/foto-expo-gpm-caracas-2024-14.jpg', 'https://i.postimg.cc/C1XkgLm7/foto-expo-gpm-caracas-2024-16.jpg', 'https://i.postimg.cc/PxPY98zN/foto-expo-gpm-caracas-2024-18.jpg', 'https://i.postimg.cc/05h0gZ4v/foto-expo-gpm-caracas-2024-2.jpg', 'https://i.postimg.cc/44Hp1VxS/foto-expo-gpm-caracas-2024-20.jpg', 'https://i.postimg.cc/WbMrBVrm/foto-expo-gpm-caracas-2024-22.jpg', 'https://i.postimg.cc/02gDXj62/foto-expo-gpm-caracas-2024-27.jpg', 'https://i.postimg.cc/Z543ZQFG/foto-expo-gpm-caracas-2024-29.jpg', 'https://i.postimg.cc/FHpSKxT7/foto-expo-gpm-caracas-2024-31.jpg', 'https://i.postimg.cc/BvvKP1zN/foto-expo-gpm-caracas-2024-32.jpg', 'https://i.postimg.cc/XvDyfYSW/foto-expo-gpm-caracas-2024-33.jpg', 'https://i.postimg.cc/qRh6jH43/foto-expo-gpm-caracas-2024-34.jpg', 'https://i.postimg.cc/bJ7D5VwF/foto-expo-gpm-caracas-2024-35.jpg', 'https://i.postimg.cc/j2ywY6Wq/foto-expo-gpm-caracas-2024-37.jpg', 'https://i.postimg.cc/Kvy3rWV1/foto-expo-gpm-caracas-2024-38.jpg', 'https://i.postimg.cc/FHrfwLhm/foto-expo-gpm-caracas-2024-39.jpg', 'https://i.postimg.cc/52SBCJ29/foto-expo-gpm-caracas-2024-4.jpg', 'https://i.postimg.cc/kXF6jc3f/foto-expo-gpm-caracas-2024-41.jpg', 'https://i.postimg.cc/P5SLH5qD/foto-expo-gpm-caracas-2024-42.jpg',
+                'https://i.postimg.cc/0Nrzy16B/foto-expo-gpm-caracas-2024-43.jpg', 'https://i.postimg.cc/DzD8WpLy/foto-expo-gpm-caracas-2024-44.jpg', 'https://i.postimg.cc/TwDhnjJj/foto-expo-gpm-caracas-2024-45.jpg', 'https://i.postimg.cc/0j1jn6VT/foto-expo-gpm-caracas-2024-48.jpg', 'https://i.postimg.cc/2yd6KzJV/foto-expo-gpm-caracas-2024-50.jpg', 'https://i.postimg.cc/sf5vXcXs/foto-expo-gpm-caracas-2024-51.jpg', 'https://i.postimg.cc/ncZMQDj7/foto-expo-gpm-caracas-2024-54.jpg', 'https://i.postimg.cc/MKDH0pVL/foto-expo-gpm-caracas-2024-55.jpg', 'https://i.postimg.cc/TPyPXjF8/foto-expo-gpm-caracas-2024-56.jpg', 'https://i.postimg.cc/kgg4TPyg/foto-expo-gpm-caracas-2024-57.jpg', 'https://i.postimg.cc/kgY5ZYjF/foto-expo-gpm-caracas-2024-58.jpg', 'https://i.postimg.cc/Jh9z7DCs/foto-expo-gpm-caracas-2024-59.jpg', 'https://i.postimg.cc/ZRpKWbJV/foto-expo-gpm-caracas-2024-61.jpg', 'https://i.postimg.cc/QCDN52ts/foto-expo-gpm-caracas-2024-65.jpg', 'https://i.postimg.cc/0jCkCVMS/foto-expo-gpm-caracas-2024-68.jpg', 'https://i.postimg.cc/0ysGjjxH/foto-expo-gpm-caracas-2024-7.jpg', 'https://i.postimg.cc/RC1Z9Zs0/foto-expo-gpm-caracas-2024-70.jpg', 'https://i.postimg.cc/Wb2b4cCw/foto-expo-gpm-caracas-2024-74.jpg', 'https://i.postimg.cc/fTBWtghn/foto-expo-gpm-caracas-2024-77.jpg', 'https://i.postimg.cc/bwryQHzG/foto-expo-gpm-caracas-2024-78.jpg', 'https://i.postimg.cc/fRPw5tL8/foto-expo-gpm-caracas-2024-81.jpg', 'https://i.postimg.cc/wTJc9LKm/foto-expo-gpm-caracas-2024-9.jpg'
+            ];
+
+            const tracks = document.querySelectorAll('.gallery-track');
+            const midPoint = Math.ceil(galleryImages.length / 2);
+            const gallery1 = galleryImages.slice(0, midPoint);
+            const gallery2 = galleryImages.slice(midPoint);
+
+            function populateTrack(track, images) {
+                const fragment = document.createDocumentFragment();
+                [...images, ...images].forEach(src => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = 'Foto del evento Expo GPM';
+                    item.appendChild(img);
+                    fragment.appendChild(item);
+                });
+                track.appendChild(fragment);
+                track.style.width = `${400 * images.length * 2}px`;
+            }
+
+            populateTrack(tracks[0], gallery1);
+            populateTrack(tracks[1], gallery2);
+
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            document.querySelectorAll('.gallery-item img').forEach(img => {
+                img.addEventListener('click', () => {
+                    modalImage.src = img.src;
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            function closeModal() {
+                modal.classList.add('opacity-0');
+                modal.classList.remove('open');
+                setTimeout(() => {
+                    modal.classList.add('pointer-events-none');
+                    document.body.style.overflow = 'auto';
+                }, 300);
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+            const progressCircle = document.getElementById('progress-circle');
+            const circumference = progressCircle.getTotalLength();
+            
+            progressCircle.style.strokeDasharray = circumference;
+            progressCircle.style.strokeDashoffset = circumference;
+
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight;
+                const clientHeight = document.documentElement.clientHeight;
+                const scrollPercent = (scrollTop / (docHeight - clientHeight));
+                const progress = circumference * (1 - scrollPercent);
+
+                progressCircle.style.strokeDashoffset = progress;
+
+                if (scrollTop > 300) {
+                    scrollToTopBtn.classList.add('visible');
+                } else {
+                    scrollToTopBtn.classList.remove('visible');
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            const initParticles = () => {
+                if (typeof tsParticles !== 'undefined') {
+                    tsParticles.load("particles-js", {
+                        fpsLimit: 60,
+                        particles: {
+                            number: { value: 50, density: { enable: true, value_area: 800 } },
+                            color: { value: "#ffffff" },
+                            shape: { type: "circle" },
+                            opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+                            size: { value: 3, random: true, anim: { enable: false } },
+                            line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+                            move: {
+                                enable: true,
+                                speed: 2,
+                                direction: "none",
+                                random: false,
+                                straight: false,
+                                out_mode: "out",
+                                attract: { enable: false }
+                            }
+                        },
+                        interactivity: {
+                            detect_on: "canvas",
+                            events: {
+                                onhover: { enable: true, mode: "grab" },
+                                onclick: { enable: true, mode: "push" },
+                                resize: true
+                            },
+                            modes: {
+                                grab: { distance: 140, line_opacity: 1 },
+                                repulse: { distance: 200, duration: 0.4 },
+                                push: { particles_nb: 4 }
+                            }
+                        },
+                        retina_detect: true
+                    });
+                } else {
+                    setTimeout(initParticles, 100);
+                }
+            };
+            initParticles();
+        });
+    </script>
+</body>
+</html>
